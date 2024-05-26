@@ -75,7 +75,7 @@ async function run() {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
           })
           .send({ success: true })
-        console.log('Logout successful')
+        // console.log('Logout successful')
       } catch (err) {
         res.status(500).send(err)
       }
@@ -85,7 +85,7 @@ async function run() {
     app.get('/rooms', async (req, res) => {
       const category = req.query.category
       let query = {}
-      if(category && category!=='null') query= {category}
+      if (category && category !== 'null') query = { category }
       const result = await roomsCollection.find(query).toArray()
       res.send(result)
     })
@@ -93,13 +93,13 @@ async function run() {
     // get single room details from db show in room/id 
     app.get('/room/:id', async (req, res) => {
       const id = req.params.id
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await roomsCollection.findOne(query)
       res.send(result)
     })
 
     // Send a ping to confirm a successful connection
-    await client.db('admin').command({ ping: 1 })
+    // await client.db('admin').command({ ping: 1 })
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     )
@@ -110,9 +110,9 @@ async function run() {
 run().catch(console.dir)
 
 app.get('/', (req, res) => {
-  res.send('Hello from StayVista Server..')
+  res.send('Server Running..')
 })
 
 app.listen(port, () => {
-  console.log(`StayVista is running on port ${port}`)
+  console.log(`Server is running on port ${port}`)
 })
