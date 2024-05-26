@@ -49,6 +49,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const roomsCollection = client.db('RentNest').collection('rooms')
+
     // auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body
@@ -77,6 +79,20 @@ async function run() {
       } catch (err) {
         res.status(500).send(err)
       }
+    })
+
+    // get all rooms from db show in homepage 
+    app.get('/rooms', async (req, res) => {
+      const result = await roomsCollection.find().toArray()
+      res.send(result)
+    })
+
+    // get single room details from db show in room/id 
+    app.get('/room/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await roomsCollection.findOne(query)
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
