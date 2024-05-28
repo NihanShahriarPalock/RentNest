@@ -1,58 +1,55 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { FcGoogle } from 'react-icons/fc'
-import useAuth from '../../hooks/useAuth'
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import { Link, useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
+import useAuth from "../../hooks/useAuth";
+
+import toast from "react-hot-toast";
 import { ImSpinner10 } from "react-icons/im";
+import { imageUpload } from "../../api/utils";
 const SignUp = () => {
   const navigate = useNavigate();
-  const { createUser, signInWithGoogle, updateUserProfile,loading,setLoading } = useAuth();
-  const handleSubmit =async e => {
+  const { 
+    createUser,
+    signInWithGoogle,
+    updateUserProfile,
+    loading,
+    setLoading,
+  } = useAuth();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = e.target
-    const name = form.name.value
-    const email = form.email.value
-    const password = form.password.value
-    const image = form.image.files[0]
-    const formData = new FormData();
-    formData.append('image',image)
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const image = form.image.files[0];
+    
     try {
-      setLoading(true)
+      setLoading(true);
       // upload image and get image url
-      const { data } =await axios.post(
-        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,formData
-      );
-      // console.log(data.data.display_url);
+      const image_url = await imageUpload(image);
+   
 
-      // user registration 
-      const result = await createUser(email, password)
-      
+      // user registration
+      // eslint-disable-next-line no-unused-vars
+      const result = await createUser(email, password);
 
       //username and  photo save in database
-      await updateUserProfile(name, data.data.display_url);
-      navigate('/')
-      toast.success("Sign-Up Successful")
+      await updateUserProfile(name, image_url);
+      navigate("/");
+      toast.success("Sign-Up Successful");
+    } catch (err) {
+      toast.error(err.message);
     }
-    catch (err){
-      // console.log(err);
-      toast.error(err.message)
-    }
-  }
+  };
 
-  const handleGoogleSignIn = async() => {
-     try {
-      
-     await signInWithGoogle()
-
-      navigate('/')
-      toast.success("Sign-Up Successful")
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      navigate("/");
+      toast.success("Sign-Up Successful");
+    } catch (err) {
+      toast.error(err.message);
     }
-    catch (err){
-      // console.log(err);
-      toast.error(err.message)
-    }
-  }
-
+  };
 
   return (
     <div className='flex justify-center items-center min-h-screen'>
@@ -164,6 +161,6 @@ const SignUp = () => {
       </div>
     </div>
   );
-}
+};
 
-export default SignUp
+export default SignUp;
