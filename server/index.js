@@ -3,7 +3,7 @@ const app = express()
 require('dotenv').config()
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
+const { MongoClient, ServerApiVersion, ObjectId, Timestamp } = require('mongodb')
 const jwt = require('jsonwebtoken')
 
 const port = process.env.PORT || 8000
@@ -50,6 +50,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const roomsCollection = client.db('RentNest').collection('rooms')
+    const usersCollection = client.db('RentNest').collection('users')
 
     // auth related api
     app.post('/jwt', async (req, res) => {
@@ -81,6 +82,43 @@ async function run() {
       }
     })
 
+    // save a user data in database 
+    app.put('/user', async (req, res) => {
+      const user = req.body
+      const query = { email: user?.email }
+      //check if user already exist 
+      const isExist = await usersCollection.findOne(query)
+      if (isExist) {
+        if (user?.status === 'Requested') {
+          const result = await usersCollection.updateOne(query, {
+            $set: { status: user?.status },
+          })
+          return res.send(result)
+        } else {
+          return res.send(isExist)
+        }
+      }
+
+      //Save for first time
+      const option = { upsert: true }
+      const updateDoc = {
+        $set: {
+          ...user,
+          timestamp: Date.now(),
+        },
+      }
+      const result = await usersCollection.updateOne(query, updateDoc, option)
+      res.send(result)
+    })
+
+
+    //Get all users data from Database
+    app.get('/users', async (req, res) => {
+
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
     // get all rooms from db show in homepage 
     app.get('/rooms', async (req, res) => {
       const category = req.query.category
@@ -108,9 +146,9 @@ async function run() {
     // get all rooms for host
     app.get('/my-listings/:email', async (req, res) => {
       const email = req.params.email
-      
-      let query = {'host.email':email}
-    
+
+      let query = { 'host.email': email }
+
       const result = await roomsCollection.find(query).toArray()
       res.send(result)
     })

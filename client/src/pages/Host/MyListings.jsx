@@ -25,7 +25,7 @@ const MyListings = () => {
     },
   });
 
-  //   delete
+  //   delete a room 
   const { mutateAsync } = useMutation({
     mutationFn: async (id) => {
       const { data } = await axiosSecure.delete(`/room/${id}`);
@@ -34,13 +34,13 @@ const MyListings = () => {
     onSuccess: (data) => {
       console.log(data);
       refetch();
-      toast.success("Successfully deleted.");
+      toast.success("Successfully deleted ");
     },
   });
 
   //  Handle Delete
   const handleDelete = async (id) => {
-    console.log(id);
+    // console.log(id);
     try {
       await mutateAsync(id);
     } catch (err) {
