@@ -1,28 +1,35 @@
 import { useState } from "react";
 import { GrLogout } from "react-icons/gr";
 import { FcSettings } from "react-icons/fc";
-import { BsFillHouseAddFill } from "react-icons/bs";
+
 import { AiOutlineBars } from "react-icons/ai";
 import { BsGraphUp } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import { MdHomeWork } from "react-icons/md";
+
 import useAuth from "../../hooks/useAuth";
 import useRole from "../../hooks/useRole";
 import MenuItem from "./MenuItem";
 import HostMenu from "./HostMenu";
 import AdminMenu from "./AdminMenu";
 import GuestMenu from "./GuestMenu";
+import ToggleBtn from "../Shared/Button/ToggleBtn";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
   const [isActive, setActive] = useState(false);
   const [role] = useRole();
-  console.log(role);
 
+  console.log(role);
+const [toggle,setToggle] = useState(true)
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive);
   };
+
+   const toggleHandler = (event) => {
+     setToggle(event.target.checked);
+    //  setToggle(!toggle)
+   };
   return (
     <>
       {/* Small Screen Navbar */}
@@ -71,6 +78,11 @@ const Sidebar = () => {
           {/* Nav Items */}
           <div className='flex flex-col justify-between flex-1 mt-6'>
             {/* Conditional toggle button here.. */}
+            {role === "host" && (
+              <ToggleBtn
+                toggleHandler={toggleHandler}
+                toggle={toggle}></ToggleBtn>
+            )}
 
             {/*  Menu Items */}
             <nav>
@@ -94,9 +106,9 @@ const Sidebar = () => {
 
               {/* Menu List for different different user  */}
               {role === "guest" && <GuestMenu></GuestMenu>}
-              {role === "host" && <HostMenu></HostMenu>}
-              {/* {role === "admin" && <AdminMenu></AdminMenu>} */}
-              <AdminMenu></AdminMenu>
+              {role === "host" ? toggle? <HostMenu /> : <GuestMenu></GuestMenu> : undefined}
+              {role === "admin" && <AdminMenu></AdminMenu>}
+             
             </nav>
           </div>
         </div>
