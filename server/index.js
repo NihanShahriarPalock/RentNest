@@ -88,6 +88,7 @@ async function run() {
       const query = { email: user?.email }
       //check if user already exist 
       const isExist = await usersCollection.findOne(query)
+      //Request to change his rule
       if (isExist) {
         if (user?.status === 'Requested') {
           const result = await usersCollection.updateOne(query, {
@@ -116,6 +117,13 @@ async function run() {
     app.get('/users', async (req, res) => {
 
       const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
+    //Get single user data from Database 
+    app.get('/user/:email', async (req, res) => {
+      const email = req.params.email
+      const result = await usersCollection.findOne({ email })
       res.send(result)
     })
 

@@ -15,7 +15,7 @@ const RoomReservation = ({ room }) => {
 
   const totalPrice = (parseInt(
     differenceInCalendarDays(new Date(room.to), new Date(room.from))
-  )) * room?.price;
+  )+1) * room?.price;
 
   return (
     <div className='rounded-xl border-[1px] border-neutral-200 overflow-hidden bg-white'>
@@ -30,6 +30,7 @@ const RoomReservation = ({ room }) => {
           showDateDisplay={false}
           rangeColors={["#F6536D"]}
           editableDateInputs={true}
+          // eslint-disable-next-line no-unused-vars
           onChange={(item) => {
             setState([
               {

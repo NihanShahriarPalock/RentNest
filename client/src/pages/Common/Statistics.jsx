@@ -1,7 +1,7 @@
 
 
 const Statistics = () => {
-    console.log("Heelo");
+    // console.log("Heelo");
     return (
         <div>
             <h2>Welcome to Dashboard</h2>
